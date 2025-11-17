@@ -1,0 +1,5 @@
+name: Glossary Tooltip
+type: module
+description: Provides tooltip definitions for glossary terms.
+core_version_requirement: ^10 || ^11
+package: Custom
