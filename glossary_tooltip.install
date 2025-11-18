@@ -1,9 +1,5 @@
 <?php
 
-use Drupal\Core\Entity\Entity\EntityFormDisplay;
-use Drupal\Core\Entity\Entity\EntityViewDisplay;
-use Drupal\field\Entity\FieldConfig;
-use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\taxonomy\Entity\Vocabulary;
 
 /**
@@ -30,70 +26,18 @@ function glossary_tooltip_install() {
   ]);
   $vocab->save();
   \Drupal::logger('glossary_tooltip')->info('Created vocabulary "@vid".', ['@vid' => $vid]);
-
-  // Create a long text field for term descriptions if it doesn't exist.
-  $fieldName = 'field_glossary_description';
-  $entityType = 'taxonomy_term';
-  if (!FieldStorageConfig::loadByName($entityType, $fieldName)) {
-    FieldStorageConfig::create([
-      'field_name' => $fieldName,
-      'entity_type' => $entityType,
-      'type' => 'text_with_summary',
-      'cardinality' => 1,
-      'settings' => [],
-    ])->save();
-  }
-
-  // Attach the field to the 'glossary' vocabulary bundle.
-  if (!FieldConfig::loadByName($entityType, $vid, $fieldName)) {
-    FieldConfig::create([
-      'field_name' => $fieldName,
-      'entity_type' => $entityType,
-      'bundle' => $vid,
-      'label' => 'Description',
-      'description' => 'A detailed description of the glossary term.',
-      'settings' => [
-        'display_summary' => TRUE,
-      ],
-    ])->save();
-  }
-
-  //Configure form display.
-  $formDisplay = EntityFormDisplay::load($entityType . '.' . $vid . '.default');
-  if (!$formDisplay) {
-    $formDisplay = EntityFormDisplay::create([
-      'targetEntityType' => $entityType,
-      'bundle' => $vid,
-      'mode' => 'default',
-      'status' => TRUE,
-    ]);
-    $formDisplay->setComponent($fieldName, [
-      'type' => 'text_textarea_with_summary',
-      'weight' => 5,
-    ])->save();
-  }
-
-  $viewDisplay = EntityViewDisplay::load($entityType . '. ' . $vid . '.default');
-  if (!$viewDisplay) {
-    $viewDisplay = EntityViewDisplay::create([
-      'targetEntityType' => $entityType,
-      'bundle' => $vid,
-      'mode' => 'default',
-      'status' => TRUE,
-    ]);
-    $viewDisplay->setComponent($fieldName, [
-      'type' => 'text_default',
-      'weight' => 5,
-      'label' => 'hidden',
-    ])->save();
-  }
 }
 
 /**
- * @TODO
  * Implements hook_uninstall().
  */
 function glossary_tooltip_uninstall() {
   // Attempt to remove the vocabulary we created. If terms exist, deleting
-  // the vocabulary will also remove the terms; proceed with caution.
+  // the vocabulary will also remove the terms.
+  $vid = 'glossary';
+  $vocab = Vocabulary::load($vid);
+  if ($vocab) {
+    $vocab->delete();
+    \Drupal::logger('glossary_tooltip')->info('Deleted vocabulary "@vid".', ['@vid' => $vid]);
+  }
 }
