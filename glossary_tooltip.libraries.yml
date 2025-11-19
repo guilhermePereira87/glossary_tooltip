@@ -1,0 +1,12 @@
+glossary_tooltip:
+  version: 1.x
+  css:
+    theme:
+      css/glossary_tooltip.css: {}
+  js:
+    https://code.jquery.com/ui/1.13.2/jquery-ui.min.js: { type: external, minified: true }
+    js/glossary_tooltip.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupalSettings

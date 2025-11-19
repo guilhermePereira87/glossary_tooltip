@@ -2,7 +2,8 @@
 
 namespace Drupal\glossary_tooltip\Plugin\Filter;
 
-use Drupal\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\filter\FilterProcessResult;
 use Drupal\filter\Plugin\FilterBase;
 
@@ -11,10 +12,10 @@ use Drupal\filter\Plugin\FilterBase;
  *   id = "filter_glossary_tooltip",
  *   title = @Translation("Glossary Tooltip Filter"),
  *   description = @Translation("Adds glossary term tooltips to text."),
- *   type = Drupal\filter\Plugin\FilterInterface::TYPE_MARKUP_LANGUAGE,
+ *   type = Drupal\filter\Plugin\FilterInterface::TYPE_TRANSFORM_REVERSIBLE,
  * )
  */
-class FilterGlossaryTooltip extends FilterBase {
+class FilterGlossaryTooltip extends FilterBase implements ContainerFactoryPluginInterface {
 
   /**
    * The glossary tooltip manager service.
@@ -35,11 +36,25 @@ class FilterGlossaryTooltip extends FilterBase {
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    // If the dedicated service is available use it, otherwise build a
+    // manager instance with default services so the module remains
+    // standalone (avoids ServiceNotFoundException on some environments).
+    if ($container->has('glossary_tooltip.manager')) {
+      $manager = $container->get('glossary_tooltip.manager');
+    }
+    else {
+      $manager = new \Drupal\glossary_tooltip\Service\GlossaryTooltipManager(
+        $container->get('entity_type.manager'),
+        $container->get('cache.default'),
+        $container->get('language_manager')
+      );
+    }
+
     return new static(
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('glossary_tooltip.manager')
+      $manager
     );
   }
 

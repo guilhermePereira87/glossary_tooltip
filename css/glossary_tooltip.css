@@ -1,0 +1,76 @@
+
+.glossary-tooltip {
+  cursor: help;
+  /* solid underline implemented via border-bottom to control color */
+  border-bottom: 2px solid #0D7978;
+  padding-bottom: 1px;
+  background-color: rgba(13, 121, 120, 0.10);
+}
+
+.glossary-tooltip-widget {
+  max-width: 420px;
+  padding: 0.6rem 0.8rem;
+  color: #ffffff;
+  background: #0D7978;
+  border-radius: 6px;
+  font-size: 14px;
+  line-height: 1.4;
+  box-shadow: 0 6px 18px rgba(13,121,120,0.25);
+  position: relative;
+}
+
+/* Arrow when tooltip is above the target (tooltip placed above -> arrow on bottom) */
+.glossary-tooltip-widget.position-top::after {
+  content: '';
+  position: absolute;
+  left: var(--arrow-left, 50px);
+  bottom: -8px;
+  border-width: 8px 8px 0 8px;
+  border-style: solid;
+  border-color: #0D7978 transparent transparent transparent;
+}
+
+/* Arrow when tooltip is below the target (tooltip placed below -> arrow on top) */
+.glossary-tooltip-widget.position-bottom::after {
+  content: '';
+  position: absolute;
+  left: var(--arrow-left, 50px);
+  top: -8px;
+  border-width: 0 8px 8px 8px;
+  border-style: solid;
+  border-color: transparent transparent #0D7978 transparent;
+}
+
+.glossary-tooltip-content { 
+  max-width: 420px;
+}
+
+.glossary-tooltip-summary {
+  /* multiline clamp to 3 lines */
+  display: -webkit-box;
+  line-clamp: 3;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: calc(1.4em * 3);
+  margin-bottom: 0.5rem;
+}
+
+.glossary-tooltip-readmore {
+  color: #ffffff;
+  text-decoration: underline;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.glossary-tooltip-readmore .glossary-tooltip-icon {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+}
+
+.glossary-tooltip-widget a { color: #ffffff; }
+
